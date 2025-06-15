@@ -1,7 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { OptionType } from 'src/constants/articleProps';
 import { Text } from 'src/ui/text';
-import { useEnterSubmit } from './hooks/useEnterSubmit';
 
 import styles from './RadioGroup.module.scss';
 
@@ -16,15 +15,31 @@ type OptionProps = {
 
 export const Option = (props: OptionProps) => {
 	const { value, title, selected, groupName, onChange, option } = props;
-
 	const optionRef = useRef<HTMLDivElement>(null);
 
 	const handleChange = () => onChange?.(option);
 
-	useEnterSubmit({ onChange, option });
+	// Добавляю обработку нажатия Enter для accessibility
+	useEffect(() => {
+		const optionElement = optionRef.current;
+		if (!optionElement) return;
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Enter') {
+				onChange?.(option);
+			}
+		};
+
+		optionElement.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			optionElement.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [onChange, option]);
 
 	const inputId = `${groupName}_radio_item_with_value__${value}`;
-	const isChecked = value === selected.title;
+	// Исправляю логику проверки выбранного элемента - сравниваю по value
+	const isChecked = value === selected.value;
 
 	return (
 		<div
@@ -40,6 +55,7 @@ export const Option = (props: OptionProps) => {
 				name={groupName}
 				id={inputId}
 				value={value}
+				checked={isChecked}
 				onChange={handleChange}
 				tabIndex={-1}
 			/>
