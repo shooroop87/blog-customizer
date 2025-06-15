@@ -23,19 +23,18 @@ type ArticleParamsFormProps = {
 };
 
 export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
-	// Добавляю состояние для управления открытием/закрытием сайдбара
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	// Добавляю локальное состояние формы, которое не применяется сразу
 	const [formState, setFormState] = useState(defaultArticleState);
-	// Создаю ref для определения клика вне сайдбара
 	const sidebarRef = useRef<HTMLDivElement>(null);
 
-	// Реализую закрытие меню при клике вне формы
+	// Закрытие меню при клике вне формы
 	useEffect(() => {
+		// Если сайдбар закрыт, весь эффект прекращается
+		if (!isMenuOpen) return;
+
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as Node;
 			if (
-				isMenuOpen &&
 				sidebarRef.current &&
 				!sidebarRef.current.contains(target)
 			) {
@@ -53,14 +52,12 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 		setIsMenuOpen(!isMenuOpen);
 	};
 
-	// Обрабатываю отправку формы - применяю настройки и закрываю сайдбар
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 		onApply(formState);
 		setIsMenuOpen(false);
 	};
 
-	// Сбрасываю настройки к значениям по умолчанию и сразу применяю
 	const handleReset = () => {
 		setFormState(defaultArticleState);
 		onApply(defaultArticleState);
@@ -75,13 +72,12 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 					[styles.container_open]: isMenuOpen,
 				})}>
 				<form className={styles.form} onSubmit={handleSubmit}>
-					<Text as='h2' size={31} weight={800} uppercase>
+					<Text as="h2" size={31} weight={800} uppercase>
 						Задайте параметры
 					</Text>
 
-					{/* Добавляю выбор шрифта через Select компонент */}
 					<Select
-						title='Шрифт'
+						title="Шрифт"
 						options={fontFamilyOptions}
 						selected={formState.fontFamilyOption}
 						onChange={(option) =>
@@ -89,10 +85,9 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 						}
 					/>
 
-					{/* Добавляю выбор размера шрифта через RadioGroup */}
 					<RadioGroup
-						name='fontSize'
-						title='Размер шрифта'
+						name="fontSize"
+						title="Размер шрифта"
 						options={fontSizeOptions}
 						selected={formState.fontSizeOption}
 						onChange={(option) =>
@@ -100,9 +95,8 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 						}
 					/>
 
-					{/* Добавляю выбор цвета шрифта */}
 					<Select
-						title='Цвет шрифта'
+						title="Цвет шрифта"
 						options={fontColors}
 						selected={formState.fontColor}
 						onChange={(option) =>
@@ -112,9 +106,8 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 
 					<Separator />
 
-					{/* Добавляю выбор цвета фона */}
 					<Select
-						title='Цвет фона'
+						title="Цвет фона"
 						options={backgroundColors}
 						selected={formState.backgroundColor}
 						onChange={(option) =>
@@ -122,10 +115,9 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 						}
 					/>
 
-					{/* Добавляю выбор ширины контента */}
 					<RadioGroup
-						name='contentWidth'
-						title='Ширина контента'
+						name="contentWidth"
+						title="Ширина контента"
 						options={contentWidthArr}
 						selected={formState.contentWidth}
 						onChange={(option) =>
@@ -135,12 +127,12 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 
 					<div className={styles.bottomContainer}>
 						<Button
-							title='Сбросить'
-							htmlType='reset'
-							type='clear'
+							title="Сбросить"
+							htmlType="reset"
+							type="clear"
 							onClick={handleReset}
 						/>
-						<Button title='Применить' htmlType='submit' type='apply' />
+						<Button title="Применить" htmlType="submit" type="apply" />
 					</div>
 				</form>
 			</aside>
