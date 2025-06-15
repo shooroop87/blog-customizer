@@ -10,35 +10,42 @@ import styles from './Select.module.scss';
 
 type OptionProps = {
 	option: OptionType;
-	onClick: (value: OptionType['value']) => void;
+	onClick: (option: OptionType) => void;
+	selected?: OptionType;
 };
 
 export const Option = (props: OptionProps) => {
 	const {
 		option: { value, title, optionClassName, className },
 		onClick,
+		selected,
+		option,
 	} = props;
 	const optionRef = useRef<HTMLLIElement>(null);
 
-	const handleClick =
-		(clickedValue: OptionType['value']): MouseEventHandler<HTMLLIElement> =>
-		() => {
-			onClick(clickedValue);
-		};
+	// Изменяю обработчик клика - передаю весь объект option вместо только value
+	const handleClick: MouseEventHandler<HTMLLIElement> = () => {
+		onClick(option);
+	};
 
+	// Обновляю hook для передачи полного объекта option
 	useEnterOptionSubmit({
 		optionRef,
 		value,
-		onClick,
+		onClick: () => onClick(option),
 	});
+
+	// Добавляю проверку выбранной опции для правильного отображения
+	const isSelected = selected?.value === value;
 
 	return (
 		<li
 			className={clsx(styles.option, styles[optionClassName || ''])}
 			value={value}
-			onClick={handleClick(value)}
+			onClick={handleClick}
 			tabIndex={0}
 			data-testid={`select-option-${value}`}
+			data-selected={isSelected}
 			ref={optionRef}>
 			<Text family={isFontFamilyClass(className) ? className : undefined}>
 				{title}
